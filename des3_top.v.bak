@@ -1,0 +1,52 @@
+module des3_top (
+    input         clock,
+    input         rst,
+    input         start,          // Chỉ cần start 1 lần để kích hoạt chuỗi
+    input  [63:0] key0,
+    input  [63:0] key1,
+    input  [63:0] key2,
+    input  [63:0] plaintext_in,   // Dữ liệu gốc vào
+    
+    output [63:0] ciphertext_out, // Kết quả sau khi mã hóa (ở giữa)
+    output [63:0] recovered_out,  // Kết quả sau khi giải mã (phải bằng plaintext_in)
+    output        done_all        // Báo hiệu khi cả quá trình mã hóa -> giải mã xong
+);
+
+    // -----------------------------------------------------------
+    // Dây nối giữa khối Mã hóa và Giải mã
+    // -----------------------------------------------------------
+    wire [63:0] internal_cipher;  // Output của Encrypt -> Input của Decrypt
+    wire        encrypt_done;     // Tín hiệu done của Encrypt -> Start của Decrypt
+
+    // 1. KHỐI MÃ HÓA (Chạy trước)
+    des3_encrypt u_encrypt (
+        .clock    (clock),
+        .rst      (rst),
+        .select   (start),          // Nhận start từ bên ngoài
+        .key0     (key0),
+        .key1     (key1),
+        .key2     (key2),
+        .input_data  (plaintext_in),   // Vào là Plaintext
+        .output_data (internal_cipher),// Ra là Ciphertext
+        .done     (encrypt_done)    // Xong thì báo hiệu
+    );
+
+    // 2. KHỐI GIẢI MÃ (Chạy ngay sau khi Mã hóa xong)
+    des3_decrypt u_decrypt (
+        .clock    (clock),
+        .rst      (rst),
+        // QUAN TRỌNG: Dùng tín hiệu done của Encrypt để kích hoạt Decrypt ngay lập tức
+        .select   (encrypt_done),   
+        .key0     (key0),
+        .key1     (key1),
+        .key2     (key2),
+        // Input lấy trực tiếp từ Output của khối Encrypt
+        .data_in  (internal_cipher), 
+        .data_out (recovered_out),  // Ra là Plaintext đã phục hồi
+        .done     (done_all)        // Xong toàn bộ
+    );
+
+    // Đưa ciphertext ra ngoài để bạn xem (nếu cần)
+    assign ciphertext_out = internal_cipher;
+
+endmodule

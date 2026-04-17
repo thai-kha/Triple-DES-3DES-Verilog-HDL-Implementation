@@ -1,0 +1,26 @@
+// ======================= DES - Initial Permutation (IP) ======================
+// Input : plaintext[63:0]  (bit 63 là MSB, tương ứng vị trí 1 trong bảng FIPS)
+// Output: ip_out[63:0], L0 = ip_out[63:32], R0 = ip_out[31:0]
+// ============================================================================
+module des_ip_stage (
+    input  [63:0] plaintext,
+    output [63:0] ip_out,
+    output [31:0] L0,
+    output [31:0] R0
+);
+    // Bảng IP (FIPS 46-3), ánh xạ trực tiếp bit
+    assign ip_out = {
+        plaintext[6],  plaintext[14], plaintext[22], plaintext[30], plaintext[38], plaintext[46], plaintext[54], plaintext[62],
+        plaintext[4],  plaintext[12], plaintext[20], plaintext[28], plaintext[36], plaintext[44], plaintext[52], plaintext[60],
+        plaintext[2],  plaintext[10], plaintext[18], plaintext[26], plaintext[34], plaintext[42], plaintext[50], plaintext[58],
+        plaintext[0],  plaintext[8],  plaintext[16], plaintext[24], plaintext[32], plaintext[40], plaintext[48], plaintext[56],
+        plaintext[7],  plaintext[15], plaintext[23], plaintext[31], plaintext[39], plaintext[47], plaintext[55], plaintext[63],
+        plaintext[5],  plaintext[13], plaintext[21], plaintext[29], plaintext[37], plaintext[45], plaintext[53], plaintext[61],
+        plaintext[3],  plaintext[11], plaintext[19], plaintext[27], plaintext[35], plaintext[43], plaintext[51], plaintext[59],
+        plaintext[1],  plaintext[9],  plaintext[17], plaintext[25], plaintext[33], plaintext[41], plaintext[49], plaintext[57]
+    };
+
+    // Chia đôi sau IP
+    assign L0 = ip_out[63:32];
+    assign R0 = ip_out[31:0];
+endmodule

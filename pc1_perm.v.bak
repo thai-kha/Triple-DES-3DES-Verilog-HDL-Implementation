@@ -1,0 +1,25 @@
+// pc1_perm.v  - DES Permuted Choice 1 (PC-1)
+// Input:  key64 [63:0]  (MSB ở bit 63, LSB ở bit 0)
+// Output: k56  [55:0]   = PC-1(key64)
+//         C0,D0 [27:0]  = hai nửa của k56
+module pc1_perm(
+    input  [63:0] key64,
+    output [55:0] k56,
+    output [27:0]  C0,
+    output [27:0] D0
+);
+    // PC-1 chuẩn FIPS 46-3; dùng chỉ số [64-n] để khớp đánh số bảng
+    assign k56 = {
+        key64[64-57], key64[64-49], key64[64-41], key64[64-33], key64[64-25], key64[64-17], key64[64-9],
+        key64[64-1],  key64[64-58], key64[64-50], key64[64-42], key64[64-34], key64[64-26], key64[64-18],
+        key64[64-10], key64[64-2],  key64[64-59], key64[64-51], key64[64-43], key64[64-35], key64[64-27],
+        key64[64-19], key64[64-11], key64[64-3],  key64[64-60], key64[64-52], key64[64-44], key64[64-36],
+        key64[64-63], key64[64-55], key64[64-47], key64[64-39], key64[64-31], key64[64-23], key64[64-15],
+        key64[64-7],  key64[64-62], key64[64-54], key64[64-46], key64[64-38], key64[64-30], key64[64-22],
+        key64[64-14], key64[64-6],  key64[64-61], key64[64-53], key64[64-45], key64[64-37], key64[64-29],
+        key64[64-21], key64[64-13], key64[64-5],  key64[64-28], key64[64-20], key64[64-12], key64[64-4]
+    };
+
+    assign C0 = k56[55:28];
+    assign D0 = k56[27:0];
+endmodule
