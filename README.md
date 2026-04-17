@@ -121,6 +121,14 @@ The design (`des3_top`) was synthesized and analyzed using Quartus II (Cyclone I
 </p>
 
 
+## Simulation Results
+
+The testbench (`tb_des3_top.v`) performs 10 comprehensive test cases including standard NIST/FIPS 46-3 Known-Answer tests, loopback verification, and stress patterns. The ModelSim waveform below demonstrates perfect loopback tracking and complete compliance across all vectors.
+
+<p align="center">
+  <img src="images/Waveform_Modelsim.png" alt="ModelSim Waveform Simulation">
+</p>
+
 ## License
 
 This project is open-source and available under the terms of the MIT License.

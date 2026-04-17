@@ -14,12 +14,20 @@ module des_decrypt (
 
     wire [27:0] C0, D0;
     pc1_perm u_pc1 (.key64(key), .C0(C0), .D0(D0));
-    function [27:0] rotl28(input [27:0] x, input [1:0] sh);
-        rotl28 = (sh==1) ? {x[26:0],x[27]} :
-                 (sh==2) ? {x[25:0],x[27:26]} : x;
+    function [27:0] rotl28;
+        input [27:0] x;
+        input [1:0]  sh;
+        begin
+            rotl28 = (sh==1) ? {x[26:0],x[27]} :
+                     (sh==2) ? {x[25:0],x[27:26]} : x;
+        end
     endfunction
-    function [1:0] sh_of(input [4:0] r);
-        sh_of = (r==1 || r==2 || r==9 || r==16) ? 1 : 2;
+
+    function [1:0] sh_of;
+        input [4:0] r;
+        begin
+            sh_of = (r==1 || r==2 || r==9 || r==16) ? 1 : 2;
+        end
     endfunction
     wire [27:0] C1  = rotl28(C0 , sh_of(1 ));
     wire [27:0] D1  = rotl28(D0 , sh_of(1 ));
@@ -132,6 +140,10 @@ module des_decrypt (
         end
     end
 
+    wire [63:0] pre_fp = {r_next, l_next};
+    wire [63:0] fp_out;
+    fp_perm u_fp (.in64(pre_fp), .out64(fp_out));
+
     always @(posedge clock or posedge rst) begin
         if (rst) begin
             l_next        <= 32'd0;
@@ -151,7 +163,4 @@ module des_decrypt (
         end
     end
 
-    wire [63:0] pre_fp = {r_next, l_next};
-    wire [63:0] fp_out;
-    fp_perm u_fp (.in64(pre_fp), .out64(fp_out));
 endmodule
